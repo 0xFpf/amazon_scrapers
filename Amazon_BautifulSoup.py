@@ -6,8 +6,8 @@ import pandas as pd
 import csv
 
 # input: ASIN + botkey + chatID + Desired Price 
-botkey='5456465228:AAG4Undn1rXjgrYBJQ73FFpn5-7EcTBFjh0'
-chatid='-788507835'
+botkey='xxxxxxxxxx:zzzzzzzzzzzzzzzzzzzzz'
+chatid='-123456789'
 alertPrice = float('50')
 asin= 'B07HCSL8JR'
 timer= 60*30 #  how often it checks for price, right now it's at 60 seconds times 30 so 30 minutes intervals.
