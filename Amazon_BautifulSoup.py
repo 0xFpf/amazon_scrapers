@@ -20,15 +20,15 @@ def check_price():
             except TypeError:
                 response_listbox.insert(tk.END, "Invalid input. Please enter a number.")
                 response_listbox.yview(tk.END)
-                startButton.config(state='enabled')
-                continue
+                startButton.config(state='normal')
+                break
             try:
                 timer= 60*int(timer_entry.get()) #  right now it's at 60 seconds times input.
             except TypeError:
                 response_listbox.insert(tk.END, "Invalid input. Please enter a number.")
                 response_listbox.yview(tk.END)
-                startButton.config(state='enabled')
-                continue
+                startButton.config(state='normal')
+                break
 
             URL = f'https://www.amazon{country}/dp/{asin}/'
 
@@ -38,18 +38,29 @@ def check_price():
             except Exception as e:
                     response_listbox.insert(tk.END, f"Error connecting to Amazon, check connection & VPN, error msg: {e}")
                     response_listbox.yview(tk.END)
-                    startButton.config(state='enabled')
-                    continue
+                    startButton.config(state='normal')
+                    break
+            
             soup1 = BeautifulSoup(page.content, "html.parser")
             soup2 = BeautifulSoup(soup1.prettify(), "html.parser")
+            try:
+                captcha= soup2.find(class_="a-last").get_text()
+                if 'robot' in captcha:
+                    response_listbox.insert(tk.END, f"Error, captcha encountered")
+                    response_listbox.yview(tk.END)
+                    startButton.config(state='normal')
+                    break
+            except Exception:
+                pass
+
             try:
                 title = soup2.find(id='productTitle').get_text()
             except Exception as e:
                     response_listbox.insert(tk.END, f"Error, product likely non-existent, error msg: {e}")
                     response_listbox.insert(tk.END, f"URL: {URL}")
                     response_listbox.yview(tk.END)
-                    startButton.config(state='enabled')
-                    continue
+                    startButton.config(state='normal')
+                    break
             availability = soup2.find(id='availability').get_text()
 
             # checks availability
@@ -74,8 +85,8 @@ def check_price():
                         response_listbox.insert(tk.END, "Error, issue with Telegram or inputted Telegram KEY & ID")
                         response_listbox.insert(tk.END, f"Error msg: {e}")
                         response_listbox.yview(tk.END)
-                        startButton.config(state='enabled')
-                        continue
+                        startButton.config(state='normal')
+                        break
             price_result=("price is "+ str(price))
             response_listbox.insert(tk.END, price_result+"  for "+str(title))
             response_listbox.yview(tk.END)
@@ -94,7 +105,7 @@ def check_price():
                 with open(Date+'AmazonScraper.csv', 'a+', newline='', encoding='UTF8') as f:
                     writer = csv.writer(f)
                     writer.writerow(data)
-        # print('Looping')
+            # print('Looping')
         time.sleep(timer)
 
 
