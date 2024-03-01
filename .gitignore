@@ -3,3 +3,6 @@
 test.py
 *.csv
 *.ini
+__pycache__/
+
+
