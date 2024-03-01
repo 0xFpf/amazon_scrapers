@@ -4,5 +4,5 @@ test.py
 *.csv
 *.ini
 __pycache__/
-
+*.__pycache__
 
