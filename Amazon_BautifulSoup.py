@@ -5,6 +5,8 @@ import datetime
 import csv
 import threading
 import tkinter as tk
+import utils
+import os
 
 # Create threading Event
 pause_event = threading.Event()
@@ -32,7 +34,7 @@ def check_price():
 
             URL = f'https://www.amazon{country}/dp/{asin}/'
 
-            headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:120.0) Gecko/20100101 Firefox/120.0", "Accept-Encoding":"gzip, deflate", "Accept":"text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8", "DNT":"1","Connection":"close", "Upgrade-Insecure-Requests":"1"}
+            headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:123.0) Gecko/20100101 Firefox/123.0", "Accept-Encoding":"gzip, deflate", "Accept":"text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8", "DNT":"1","Connection":"close", "Upgrade-Insecure-Requests":"1"}
             try:
                 page = requests.get(URL, headers=headers)
             except Exception as e:
@@ -122,6 +124,7 @@ def togglePause():
         pauseButton.config(text='Resume')
 
 def endThread():
+    utils.save_config(asin_entry, price_entry, timer_entry, telegram_id_entry, telegram_key_entry)
     exit()
 
 
@@ -176,7 +179,7 @@ asin_label = tk.Label(input_frame, text="ASIN:", bg="#303030", fg="white", font=
 asin_label.grid(row=0, column=0, padx=5, pady=5, sticky="w")
 asin_entry = tk.Entry(input_frame, bg="white", fg="black", font=("Arial", 8))
 asin_entry.grid(row=1, column=0, padx=5, pady=5, sticky="ew")
-asin_entry.insert(0, asin_placeholder)
+
 asin_entry.bind('<FocusIn>', lambda event: clear_placeholder(event, asin_entry, asin_placeholder))
 asin_entry.bind('<FocusOut>', lambda event: reset_placeholder(event, asin_entry, asin_placeholder))
 
@@ -187,7 +190,7 @@ price_label = tk.Label(input_frame, text="Price:", bg="#303030", fg="white", fon
 price_label.grid(row=0, column=1, padx=5, pady=5, sticky="w")
 price_entry = tk.Entry(input_frame, bg="white", fg="black", font=("Arial", 8))
 price_entry.grid(row=1, column=1, padx=5, pady=5, sticky="ew")
-price_entry.insert(0, price_placeholder)
+
 price_entry.bind('<FocusIn>', lambda event: clear_placeholder(event, price_entry, price_placeholder))
 price_entry.bind('<FocusOut>', lambda event: reset_placeholder(event, price_entry, price_placeholder))
 
@@ -198,7 +201,7 @@ timer_label = tk.Label(input_frame, text="Timer:", bg="#303030", fg="white", fon
 timer_label.grid(row=0, column=2, padx=5, pady=5, sticky="w")
 timer_entry = tk.Entry(input_frame, bg="white", fg="black", font=("Arial", 8))
 timer_entry.grid(row=1, column=2, padx=5, pady=5, sticky="ew")
-timer_entry.insert(0, timer_placeholder)
+
 timer_entry.bind('<FocusIn>', lambda event: clear_placeholder(event, timer_entry, timer_placeholder))
 timer_entry.bind('<FocusOut>', lambda event: reset_placeholder(event, timer_entry, timer_placeholder))
 
@@ -209,7 +212,7 @@ telegram_id_label = tk.Label(input_frame, text="Telegram ID:", bg="#303030", fg=
 telegram_id_label.grid(row=2, column=0, padx=5, pady=5, sticky="w")
 telegram_id_entry = tk.Entry(input_frame, bg="white", fg="black", font=("Arial", 8))
 telegram_id_entry.grid(row=3, column=0, columnspan=1, padx=5, pady=5, sticky="ew")
-telegram_id_entry.insert(0, telegram_id_placeholder)
+
 telegram_id_entry.bind('<FocusIn>', lambda event: clear_placeholder(event, telegram_id_entry, telegram_id_placeholder))
 telegram_id_entry.bind('<FocusOut>', lambda event: reset_placeholder(event, telegram_id_entry, telegram_id_placeholder))
 
@@ -219,7 +222,7 @@ telegram_key_label = tk.Label(input_frame, text="Telegram Key:", bg="#303030", f
 telegram_key_label.grid(row=2, column=1, padx=5, pady=5, sticky="w")
 telegram_key_entry = tk.Entry(input_frame, bg="white", fg="black", font=("Arial", 8))
 telegram_key_entry.grid(row=3, column=1, columnspan=2, padx=5, pady=5, sticky="ew")
-telegram_key_entry.insert(0, telegram_key_placeholder)
+
 telegram_key_entry.bind('<FocusIn>', lambda event: clear_placeholder(event, telegram_key_entry, telegram_key_placeholder))
 telegram_key_entry.bind('<FocusOut>', lambda event: reset_placeholder(event, telegram_key_entry, telegram_key_placeholder))
 
@@ -244,6 +247,14 @@ response_frame.pack(fill="both", expand=True)
 response_listbox = tk.Listbox(response_frame, bg="black", fg="white", font=("Arial", 8), selectbackground="#303030", selectforeground="white")
 response_listbox.pack(fill="both", expand=True)
 
+if os.path.isfile('config.ini'):
+    utils.load_config(asin_entry, price_entry, timer_entry, telegram_id_entry, telegram_key_entry)
+else:
+    asin_entry.insert(0, asin_placeholder)
+    price_entry.insert(0, price_placeholder)
+    timer_entry.insert(0, timer_placeholder)
+    telegram_id_entry.insert(0, telegram_id_placeholder)
+    telegram_key_entry.insert(0, telegram_key_placeholder)
 # Make the response window always cover the entire bottom half of the GUI
 root.grid_columnconfigure(0, weight=1)
 root.grid_rowconfigure(3, weight=1)
